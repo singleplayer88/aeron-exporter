@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
+group 'aeron.prometheus'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.11
+
+def aeronVersion = '1.27.0'
+def junitVersion = '5.6.1'
+def mockitoVersion = '3.3.3'
+def prometheusSimpleClientVersion = '0.8.1'
+def slf4jVersion = '2.0.0-alpha1'
+def jettyVersion = '10.0.0.alpha1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "io.aeron:aeron-all:${aeronVersion}"
+    implementation "io.prometheus:simpleclient_httpserver:${prometheusSimpleClientVersion}"
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "org.slf4j:slf4j-simple:${slf4jVersion}"
+    implementation "org.eclipse.jetty:jetty-http-spi:${jettyVersion}"
+    implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'aeron.prometheus.WebServer'
+    }
+}
