@@ -19,6 +19,7 @@ import io.aeron.CncFileDescriptor;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.status.CountersReader;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -43,16 +44,16 @@ public class CncFileReader {
      * Read the cnc.dat file from the aeron directory and exposes org.agrona.concurrent.status.CountersReader to iterate through the counters.
      *
      * @return CountersReader ready to iterate though the counters.
-     * @throws CncFileException when cnc.dat was not found.
-     * @throws IOException      exception when reading the file.
+     * @throws FileNotFoundException when cnc.dat was not found.
+     * @throws IOException           exception when reading the file.
      */
-    public CountersReader getCountersReader() throws CncFileException, IOException {
+    public CountersReader getCountersReader() throws IOException {
         Path cncFilePath =
                 Paths.get(
                         getProperty(AERON_DIR_PROP_NAME, AERON_DIR_PROP_DEFAULT), CncFileDescriptor.CNC_FILE);
 
         if (Files.notExists(cncFilePath)) {
-            throw new CncFileException("CnC file not found : " + cncFilePath.toString());
+            throw new FileNotFoundException("CnC file not found : " + cncFilePath.toString());
         }
 
         try (FileChannel fc = new RandomAccessFile(cncFilePath.toString(), "r").getChannel()) {

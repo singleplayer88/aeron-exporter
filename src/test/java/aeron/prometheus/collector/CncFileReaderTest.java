@@ -21,6 +21,7 @@ import org.agrona.concurrent.status.CountersReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,7 +39,7 @@ class CncFileReaderTest {
     @Test
     public void shouldFailForMissingCncFile() {
         System.setProperty("aeron.dir", Paths.get("./temp").toString());
-        assertThrows(CncFileException.class, () -> cncFileReader.getCountersReader());
+        assertThrows(IOException.class, () -> cncFileReader.getCountersReader());
         System.getProperties().remove("aeron.dir");
     }
 

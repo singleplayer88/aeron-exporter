@@ -61,21 +61,9 @@ public final class AeronCollector extends Collector implements Collector.Describ
         var samples = new ArrayList<MetricFamilySamples.Sample>();
 
         try {
-            CountersReader countersReader = cncFileReader.getCountersReader();
+            addCountersToMetricList(mfsList, samples);
 
-            countersReader.forEach((counterId, typeId, directBuffer, label) -> {
-                final long value = countersReader.getCounterValue(counterId);
-
-                // include system counters only
-                if (typeId == SYSTEM_COUNTER_TYPE_ID) {
-                    String counterName = formatLabels(label);
-                    samples.add(new MetricFamilySamples.Sample(counterName, new ArrayList<>(), new ArrayList<>(), value));
-                }
-            });
-
-            mfsList.add(new MetricFamilySamples(METRIC_NAME, Type.UNTYPED, "Aeron CNC system counters", samples));
-
-        } catch (CncFileException | IOException e) {
+        } catch (IOException e) {
             LOGGER.atError().log("Error during cnc.dat read", e);
 
             List<MetricFamilySamples.Sample> error = new ArrayList<>();
@@ -90,6 +78,22 @@ public final class AeronCollector extends Collector implements Collector.Describ
             mfsList.add(new MetricFamilySamples(COLLECTOR_DURATION_METRIC, Type.GAUGE, "Time aeron counters read took, in seconds.", duration));
         }
         return mfsList;
+    }
+
+    private void addCountersToMetricList(ArrayList<MetricFamilySamples> mfsList, ArrayList<MetricFamilySamples.Sample> samples) throws IOException {
+        CountersReader countersReader = cncFileReader.getCountersReader();
+
+        countersReader.forEach((counterId, typeId, directBuffer, label) -> {
+            final long value = countersReader.getCounterValue(counterId);
+
+            // include only the system counters
+            if (typeId == SYSTEM_COUNTER_TYPE_ID) {
+                String counterName = formatLabels(label);
+                samples.add(new MetricFamilySamples.Sample(counterName, new ArrayList<>(), new ArrayList<>(), value));
+            }
+        });
+
+        mfsList.add(new MetricFamilySamples(METRIC_NAME, Type.UNTYPED, "Aeron CNC system counters", samples));
     }
 
     /**
