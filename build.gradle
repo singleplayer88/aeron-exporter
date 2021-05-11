@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.11
 
-def aeronVersion = '1.32.0'
+def aeronVersion = '1.33.0'
 def junitVersion = '5.7.0'
 def mockitoVersion = '3.7.7'
 def prometheusSimpleClientVersion = '0.9.0'
